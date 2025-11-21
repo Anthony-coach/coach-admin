@@ -74,7 +74,7 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
       </div>
      {feed?.isSubscriberPost && <div className={classes.subscriberPostCoachDiv}>
           <p>Subscriber of Coach: </p>
-          <p className={classes.subscriberPostCoach}>{feed?.coach?.fullName}<span>, {feed?.coach?.email}</span></p>
+          <p className={classes.subscriberPostCoach}>{feed?.coach?.fullName}<span className={classes.subscriberPostEmail}>, {feed?.coach?.email}</span></p>
       </div>}
       <div className={classes.feedContent}>
         <p className={classes.feedText}>{feed?.text}</p>
