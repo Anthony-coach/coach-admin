@@ -6,7 +6,7 @@ import classes from "./FeedsCard.module.css";
 import { MdOutlineMessage } from "react-icons/md";
 import moment from "moment-timezone";
 import { useEffect, useRef, useState } from "react";
-import { mediaUrl } from "@/resources/utils/helper";
+import { mediaUrl, mergeClass } from "@/resources/utils/helper";
 import Button from "@/component/atoms/Button";
 import { GoScreenFull } from "react-icons/go";
 import NoData from "@/component/atoms/NoData/NoData";
@@ -55,7 +55,7 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
           <div className={classes.authorAvatar}>
             <Image
               src={
-                mediaUrl(feed?.coach?.photo) || `/images/cms-images/profile.png`
+                mediaUrl(feed?.isSubscriberPost ? feed?.postedBy?.photo : feed?.coach?.photo) || `/images/cms-images/profile.png`
               }
               alt={feed.author}
               width={50}
@@ -64,14 +64,18 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
             />
           </div>
           <div className={classes.authorDetails}>
-            <h3 className={classes.authorName}>{feed?.coach?.fullName}</h3>
-            <span className={classes.category}>{feed?.category?.name}</span>
+            <h3 className={classes.authorName}>{feed?.isSubscriberPost ? feed?.postedBy?.fullName : feed?.coach?.fullName}</h3>
+            <span className={mergeClass(classes.category, classes.subscriberPostCategory)}>{feed?.category?.name}</span>
           </div>
         </div>
         <div className={classes.feedDate}>
           {moment(feed?.createdAt).format("DD MMM YYYY")}
         </div>
       </div>
+     {feed?.isSubscriberPost && <div className={classes.subscriberPostCoachDiv}>
+          <p>Subscriber of Coach: </p>
+          <p className={classes.subscriberPostCoach}>{feed?.coach?.fullName}<span>, {feed?.coach?.email}</span></p>
+      </div>}
       <div className={classes.feedContent}>
         <p className={classes.feedText}>{feed?.text}</p>
         {/* <div className={classes.feedMedia}>

@@ -288,3 +288,20 @@
   line-height: normal;
   text-transform: capitalize;
 }
+
+.subscriberPostCategory{
+  color: #6caadd;
+}
+
+.subscriberPostCoachDiv{
+  display: flex;
+  gap: 8px;
+align-items: center;
+margin-bottom: 10px;
+}
+
+.subscriberPostCoach{
+  color: rgba(113, 113, 122, 0.8);
+  font-size: 16px;
+  text-transform: capitalize;
+}
