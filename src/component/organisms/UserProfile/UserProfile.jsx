@@ -266,6 +266,11 @@ export default function UserProfile({ userData }) {
               </div>
             </div>
 
+             <div className={classes.allowPostsDiv}>
+              <h3 className={classes.socialTitle}>Accepting uploads from subscribers: </h3>
+              <p className={classes.allowSubscriberPosting}>{userData?.allowSubscriberPosting ? 'Yes' : 'No'}</p>
+            </div>
+
             <div className={classes.bankDetails}>
               <h2 className={classes.sectionTitle}>Bank Details</h2>
               <div className={classes.bankInfo}>
