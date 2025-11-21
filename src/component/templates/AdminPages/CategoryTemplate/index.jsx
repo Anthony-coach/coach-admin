@@ -49,6 +49,7 @@ const CategoryTemplate = () => {
       search: _search,
       ...(_status && { status: _status?.value }),
       limit: RECORDS_LIMIT,
+      isSubscriberPost: false,
       ...(type && { type: type?.value }),
     };
     const query = new URLSearchParams(params).toString();
