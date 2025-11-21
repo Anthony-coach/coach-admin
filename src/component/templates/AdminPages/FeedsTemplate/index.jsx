@@ -16,16 +16,16 @@ import {
   FEED_ARCHIVED_OPTIONS,
   FEED_STATUS_OPTIONS,
 } from "@/developmentContent/dropdownOption";
-import NoDataFound from "@/component/atoms/NoDataFound/NoDataFound";
 import NoData from "@/component/atoms/NoData/NoData";
 import { RECORDS_LIMIT } from "@/const";
 import Button from "@/component/atoms/Button";
 import { useSearchParams } from "next/navigation";
+import RenderToast from "@/component/atoms/RenderToast";
 
 const FeedsTemplate = () => {
   const searchParams = useSearchParams();
   const initialSearch = searchParams?.get("search") || "";
-  const { Get } = useAxios();
+  const { Get, Delete } = useAxios();
   const [selectedDate, setSelectedDate] = useState("Jan 24, 2023");
   // const [selectedFeed, setSelectedFeed] = useState("All");
   const [isOpenVideo, setIsOpenVideo] = useState(false);
@@ -112,6 +112,26 @@ const FeedsTemplate = () => {
     }
   };
 
+  const handleDeleteFeed = async (feedSlug) => {
+    const { response, error } = await Delete({
+      route: `admin/feeds/${feedSlug}`,
+    });
+
+    if (response && !error) {
+      RenderToast({
+        type: "success",
+        message: "Feed deleted successfully",
+      });
+      // Remove the deleted feed from the list
+      setFeedsData((prevFeeds) =>
+        prevFeeds.filter((feed) => feed.slug !== feedSlug)
+      );
+      setTotalRecords((prev) => Math.max(0, prev - 1));
+    } else {
+      throw new Error("Failed to delete feed");
+    }
+  };
+
   if (loading === "loading") {
     return <Loader />;
   }
@@ -149,6 +169,7 @@ const FeedsTemplate = () => {
                   feed={feed}
                   onOpenComments={() => handleOpenComments(feed?.slug)}
                   setIsOpen={handleOpenVideo}
+                  onDelete={handleDeleteFeed}
                 />
               </BorderWrapper>
             ))

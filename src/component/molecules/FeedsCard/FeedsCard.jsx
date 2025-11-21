@@ -10,11 +10,14 @@ import { mediaUrl, mergeClass } from "@/resources/utils/helper";
 import Button from "@/component/atoms/Button";
 import { GoScreenFull } from "react-icons/go";
 import NoData from "@/component/atoms/NoData/NoData";
+import AreYouSureModal from "@/component/molecules/Modal/AreYouSureModal";
 
-export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
+export default function FeedsCard({ feed, setIsOpen, onOpenComments, onDelete }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const fullscreenImgRef = useRef(null);
+  const [showAreYouSureModal, setShowAreYouSureModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const mediaItems = [
     ...(feed.images?.map((img) => ({ type: "image", url: img.url })) || []),
@@ -23,6 +26,24 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
+  };
+
+  const handleDeleteClick = () => {
+    setShowAreYouSureModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (onDelete && feed?.slug) {
+      setIsDeleting(true);
+      try {
+        await onDelete(feed?.slug);
+      } catch (error) {
+        console.error("Error deleting feed:", error);
+      } finally {
+        setIsDeleting(false);
+        setShowAreYouSureModal(false);
+      }
+    }
   };
 
   useEffect(() => {
@@ -68,8 +89,18 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
             <span className={mergeClass(classes.category, classes.subscriberPostCategory)}>{feed?.category?.name}</span>
           </div>
         </div>
-        <div className={classes.feedDate}>
-          {moment(feed?.createdAt).format("DD MMM YYYY")}
+        <div className={classes.feedDateContainer}>
+          <div className={classes.feedDate}>
+            {moment(feed?.createdAt).format("DD MMM YYYY")}
+          </div>
+          {feed?.isSubscriberPost && (
+            <button
+              className={classes.deleteLink}
+              onClick={handleDeleteClick}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
      {feed?.isSubscriberPost && <div className={classes.subscriberPostCoachDiv}>
@@ -189,6 +220,23 @@ export default function FeedsCard({ feed, setIsOpen, onOpenComments }) {
           </div>
         </div>
       </div>
+      {showAreYouSureModal && (
+        <AreYouSureModal
+          show={showAreYouSureModal}
+          setShow={() => {
+            if (!isDeleting) {
+              setShowAreYouSureModal(false);
+            }
+          }}
+          heading="⚠️ Delete Feed"
+          subheading="Are you sure you want to delete this feed? This action cannot be undone."
+          confirmButtonLabel={isDeleting ? "Deleting..." : "Delete"}
+          cancelButtonLabel="Cancel"
+          confirmButtonVariant="danger"
+          cancelButtonVariant="green-outlined"
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   );
 }

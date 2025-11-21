@@ -53,6 +53,12 @@
   letter-spacing: 0.32px;
 }
 
+.feedDateContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .feedDate {
   color: #71717a;
   font-family: "AvenirRegular";
@@ -60,6 +66,25 @@
   font-style: normal;
   font-weight: 450;
   line-height: normal;
+}
+
+.deleteLink {
+  color: #ef4444;
+  font-family: "AvenirRegular";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 450;
+  line-height: normal;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.deleteLink:hover {
+  opacity: 0.8;
 }
 
 .feedContent {
