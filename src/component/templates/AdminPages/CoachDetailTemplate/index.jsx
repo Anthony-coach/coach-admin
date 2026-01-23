@@ -47,6 +47,7 @@ const CoachDetailTemplate = ({ slug }) => {
   const [page, setPage] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
   const [subscribersData, setSubscribersData] = useState(null);
+  const [waitingListCount, setWaitingListCount] = useState(0);
 
   // Subscriber specific states
   const [subscriberSearch, setSubscriberSearch] = useState("");
@@ -303,6 +304,13 @@ const CoachDetailTemplate = ({ slug }) => {
     setShowModal("reject");
   };
 
+   const getWaitingListCount = async () => {
+    const { response } = await Get({ route: `coach-waiting/count/${usersData?._id}` });
+    if (response) {
+      setWaitingListCount(response?.data?.count);
+    }
+  };
+
   useEffect(() => {
     getData();
     getCategoryData();
@@ -349,6 +357,11 @@ const CoachDetailTemplate = ({ slug }) => {
     subscriberStatus,
     subscriberCountry,
   ]);
+
+    // Get waiting list count
+    useEffect(() => {
+      usersData && getWaitingListCount();
+    }, [usersData]);
 
   return (
     <div>
@@ -451,7 +464,7 @@ const CoachDetailTemplate = ({ slug }) => {
                 }}
               />
             ) : SelectedTabs.value === "profile" ? (
-              <UserProfile userData={usersData} />
+              <UserProfile userData={usersData} waitingListCount={waitingListCount} />
             ) : SelectedTabs.value === "subscriptionCost" ? (
               <Subscription
                 editSubscription={editSubscription}

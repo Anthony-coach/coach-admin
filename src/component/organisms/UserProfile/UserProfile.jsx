@@ -18,7 +18,7 @@ import { IoPlaySharp } from "react-icons/io5";
 import BorderWrapper from "@/component/atoms/BorderWrapper";
 import { mediaUrl } from "@/resources/utils/helper";
 
-export default function UserProfile({ userData }) {
+export default function UserProfile({ userData, waitingListCount = 0 }) {
   console.log("🚀 ~ UserProfile ~ userData:", userData)
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -271,6 +271,15 @@ export default function UserProfile({ userData }) {
               <p className={classes.allowSubscriberPosting}>{userData?.allowSubscriberPosting ? 'Yes' : 'No'}</p>
             </div>
 
+              {
+                waitingListCount > 0 && (
+              <div className={classes.allowPostsDiv}>
+               <h3 className={classes.socialTitle}>Number of subscribers on coach's waiting list: </h3>
+               <p className={classes.allowSubscriberPosting}>{waitingListCount}</p>
+              </div>
+
+                )
+              }
             <div className={classes.bankDetails}>
               <h2 className={classes.sectionTitle}>Bank Details</h2>
               <div className={classes.bankInfo}>
