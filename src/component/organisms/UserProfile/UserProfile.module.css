@@ -164,11 +164,13 @@
   line-height: 1.2;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-transform: capitalize;
 }
 
 .ratingOverlay {
   display: flex;
   align-items: center;
+  text-transform: capitalize;
   gap: 8px;
   color: #F29267;
   font-family: "AvenirRegular";

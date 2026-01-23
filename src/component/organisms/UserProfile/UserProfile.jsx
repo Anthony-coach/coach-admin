@@ -18,7 +18,7 @@ import { IoPlaySharp } from "react-icons/io5";
 import BorderWrapper from "@/component/atoms/BorderWrapper";
 import { mediaUrl } from "@/resources/utils/helper";
 
-export default function UserProfile({ userData }) {
+export default function UserProfile({ userData, waitingListCount = 0 }) {
   console.log("🚀 ~ UserProfile ~ userData:", userData)
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -82,6 +82,14 @@ export default function UserProfile({ userData }) {
 
   const getSocialUrl = (name) =>
     userData?.socialLinks?.find((link) => link.name === name)?.url;
+
+  // Get comma-separated category names
+  const getCategoryNames = () => {
+    if (!userData?.categories || userData.categories.length === 0) {
+      return "";
+    }
+    return userData?.categories?.map((category) => category?.name).join(", ");
+  };
 
   // Get current reviews to display
   const getCurrentReviews = () => {
@@ -174,7 +182,7 @@ export default function UserProfile({ userData }) {
                   <h1 className={classes.nameOverlay}>{userData?.fullName}</h1>
                   <div className={classes.ratingOverlay}>
                     <MdOutlineStar size={20} fill="#F29267" />
-                    <span>{userData?.rating} Cricket Rating</span>
+                    <span>{userData?.rating} {getCategoryNames()} Rating</span>
                   </div>
                   <div className={classes.locationOverlay}>
                     <CiLocationOn size={16} fill="#B0CD6E" />
@@ -271,7 +279,26 @@ export default function UserProfile({ userData }) {
               <p className={classes.allowSubscriberPosting}>{userData?.allowSubscriberPosting ? 'Yes' : 'No'}</p>
             </div>
 
-            <div className={classes.bankDetails}>
+            <div className={classes.allowPostsDiv}>
+              <h3 className={classes.socialTitle}>Profile visibility: </h3>
+              <p className={classes.allowSubscriberPosting}>{userData?.isPublic ? 'Public' : 'Private'}</p>
+            </div>
+
+            <div className={classes.allowPostsDiv}>
+              <h3 className={classes.socialTitle}>Stipe connected: </h3>
+              <p className={classes.allowSubscriberPosting}>{userData?.stripeAccountStatus === 'onboarding_complete' ? 'Yes' : 'No'}</p>
+            </div>
+
+              {
+                waitingListCount > 0 && (
+              <div className={classes.allowPostsDiv}>
+               <h3 className={classes.socialTitle}>Number of subscribers on coach's waiting list: </h3>
+               <p className={classes.allowSubscriberPosting}>{waitingListCount}</p>
+              </div>
+
+                )
+              }
+            {/* <div className={classes.bankDetails}>
               <h2 className={classes.sectionTitle}>Bank Details</h2>
               <div className={classes.bankInfo}>
                 <div className={classes.bankItem}>
@@ -289,7 +316,7 @@ export default function UserProfile({ userData }) {
                 
                 
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Video Section */}
