@@ -5,12 +5,17 @@ import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import classes from "./TransactionCard.module.css";
 import { capitalizeFirstLetter, getMonthName, mediaUrl } from "@/resources/utils/helper";
+import useAxios from "@/interceptor/axiosInterceptor";
+import RenderToast from "@/component/atoms/RenderToast";
+import Button from "@/component/atoms/Button";
 
-const TransactionCard = ({ item, transactionType }) => {
+const TransactionCard = ({ item, transactionType, getData }) => {
   
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const { coach, status, email } = item;
+  const [loading, setLoading] = useState("");
+  const { Patch } = useAxios();
+  const { coach, status, email , withdrawalStatus, _id} = item;
   const defaultAvatar = "/images/app-images/user-avatar.png";
   if (!coach?.fullName && !coach?.photo) return null;
 
@@ -18,6 +23,23 @@ const TransactionCard = ({ item, transactionType }) => {
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleMarkAsPaid = async () => {
+    setLoading("paid");
+    const { response } = await Patch({
+      route: `admin/transactions/mark-as-sent/${item?._id}`,
+    });
+    if (response) {
+      RenderToast({
+        type: "success",
+        message: "Transaction marked as paid",
+      });
+      if (getData) {
+        getData();
+      }
+    }
+    setLoading("");
   };
 
 
@@ -38,7 +60,7 @@ const TransactionCard = ({ item, transactionType }) => {
               <span className={classes.nameSpan}>{coach?.fullName}</span>
               <div className={classes.statusBadge}>
                 <span className={classes.statusDot}></span>
-                <span className={classes.statusText}>{transactionType?.value === "subscription" && status === "deposit" ? "Completed" : transactionType.value === "withdrawal" && status === "withdrawal" ? "Pending"  : status}</span>
+                <span className={classes.statusText}>{transactionType?.value === "subscription" && status === "deposit" ? "Completed" : transactionType.value === "withdrawal" && withdrawalStatus === "pending" ? "Pending"  : withdrawalStatus}</span>
               </div>
             </div>
             <div className={classes.emailContainer}>
@@ -80,6 +102,16 @@ const TransactionCard = ({ item, transactionType }) => {
                 </span>
               </div>
             </div>
+            {transactionType?.value === "withdrawal" && withdrawalStatus === "pending" && (
+              <div className={classes.buttonContainer}>
+                <Button
+                  label={loading === "paid" ? "Processing..." : "Mark as Paid"}
+                  onClick={handleMarkAsPaid}
+                  disabled={loading === "paid"}
+                  variant="primary"
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
