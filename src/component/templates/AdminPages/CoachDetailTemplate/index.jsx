@@ -283,7 +283,8 @@ const CoachDetailTemplate = ({ slug }) => {
         const pendingItemsText = pendingItems.join(', ');
         RenderToast({
           type: "error",
-          message: `${pendingItemsText} ${pendingItems?.length > 1 ? 'are' : 'is'} not provided by the coach`,
+          message: `${pendingItems.includes("Sports Category")} ? 'sports category is not provided by the coach' : 'Coach profile is not completed'`,
+          // `${pendingItemsText} ${pendingItems?.length > 1 ? 'are' : 'is'} not provided by the coach`,
         });
       } else {
         RenderToast({

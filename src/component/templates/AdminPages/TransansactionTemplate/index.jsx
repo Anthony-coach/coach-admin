@@ -117,6 +117,7 @@ const TransansactionTemplate = () => {
             key={item._id}
            item={item}
            transactionType={transactionType}
+           getData={() => getTransactionData({ _search: debounceSearch, status: status, _transactionType: transactionType, _page: currentPage })}
           />
         ))
       ) : (

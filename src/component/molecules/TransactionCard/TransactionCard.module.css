@@ -159,6 +159,15 @@
   margin: 16px 0;
 }
 
+.buttonContainer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+
 /* Responsive styles */
 @media (max-width: 640px) {
   .profileSection {
