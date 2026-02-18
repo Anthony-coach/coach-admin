@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import classes from "./TransactionCard.module.css";
-import { capitalizeFirstLetter, getMonthName, mediaUrl } from "@/resources/utils/helper";
+import { capitalizeFirstLetter, getMonthName, mediaUrl, mergeClass } from "@/resources/utils/helper";
 import useAxios from "@/interceptor/axiosInterceptor";
 import RenderToast from "@/component/atoms/RenderToast";
 import Button from "@/component/atoms/Button";
@@ -80,7 +80,7 @@ const TransactionCard = ({ item, transactionType, getData }) => {
             <div className={classes.transactionDetails}>
               <div className={classes.detailRow}>
                 <span className={classes.detailLabel}>Coach Name</span>
-                <span className={classes.detailValue}>
+                <span className={mergeClass(classes.detailValue, classes.capitalize)}>
                   {item?.coach?.fullName || "-"}
                 </span>
               </div>

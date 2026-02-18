@@ -16,6 +16,10 @@
   transition: background-color 0.2s ease;
 }
 
+.capitalize{
+  text-transform: capitalize;
+}
+
 .transactionCard:has(.content) .header {
   background-color: #eaf2d5;
 }
