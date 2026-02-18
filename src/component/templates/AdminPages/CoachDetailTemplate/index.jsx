@@ -442,20 +442,19 @@ const CoachDetailTemplate = ({ slug }) => {
               tabs={coachTabs}
             />
             {SelectedTabs.value === "profile" ? (
-              usersData?.status === "pending" && (
                 <div className={classes?.actionButtons}>
-                  <Button
+                 {usersData?.status === "pending" && <Button
                     label="Accept"
                     variant="success"
                     onClick={handleAccept}
                     className={classes?.acceptButton}
-                  />
-                  <Button
+                  />}
+                {usersData?.status === "pending" && <Button
                     label="Reject"
                     variant="outlined"
                     onClick={handleReject}
                     className={classes?.rejectButton}
-                  />
+                  />}
                   <button 
                     className={classes.downloadButton} 
                     onClick={handleDownloadTransactions}
@@ -479,7 +478,6 @@ const CoachDetailTemplate = ({ slug }) => {
                     {downloadLoading ? "Downloading..." : "Download Transactions"}
                   </button>
                 </div>
-              )
             ) : SelectedTabs.value === "feeds" ? (
               <div className={classes?.main}>
                 <Input
