@@ -19,6 +19,10 @@ import classes from "./CoachDetailTemplate.module.css";
 
 import NoData from "@/component/atoms/NoData/NoData";
 import RenderToast from "@/component/atoms/RenderToast";
+import axios from "axios";
+import { BaseURL } from "@/resources/utils/helper";
+import { useSelector } from "react-redux";
+import momentTimezone from "moment-timezone";
 import {
   FEED_ARCHIVED_OPTIONS,
   USER_STATUS_OPTIONS,
@@ -32,9 +36,11 @@ const CoachDetailTemplate = ({ slug }) => {
   const [SelectedTabs, setSelectedTabs] = useState(coachTabs[0]);
 
   const { Get, Patch } = useAxios();
+  const { accessToken } = useSelector((state) => state.authReducer);
   const [usersData, setUsersData] = useState(null);
   const [loading, setLoading] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
   const [feedsData, setFeedsData] = useState([]);
   const [feedsLoading, setFeedsLoading] = useState("");
   const [search, setSearch] = useState("");
@@ -305,6 +311,62 @@ const CoachDetailTemplate = ({ slug }) => {
     setShowModal("reject");
   };
 
+  const handleDownloadTransactions = async () => {
+    setDownloadLoading(true);
+    try {
+      const query = {
+        coachSlug: slug,
+        transactionType: "subscription",
+      };
+      const queryString = new URLSearchParams(query).toString();
+      const url = BaseURL(`admin/transactions/download/csv?${queryString}`);
+      const response = await axios.get(url, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          timezone: momentTimezone.tz.guess(),
+        },
+      });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `transactions-${slug}-${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      // Check if this is the specific "No transactions found" error
+      const errorMessage = err?.response?.data?.message?.error;
+      if (Array.isArray(errorMessage) && errorMessage.length > 0) {
+        const firstError = errorMessage[0];
+        if (firstError && firstError.includes("No transactions found")) {
+          RenderToast({
+            message: "No transactions found",
+            type: "error",
+          });
+        } else {
+          // For other errors, show the original error message
+          RenderToast({
+            message: firstError || "No transactions found",
+            type: "error",
+          });
+        }
+      } else {
+        // Fallback for other error types
+        RenderToast({
+          message: "No transactions found.",
+          type: "error",
+        });
+      }
+      console.log("error in downloading");
+    }
+    setDownloadLoading(false);
+  };
+
    const getWaitingListCount = async () => {
     const { response } = await Get({ route: `coach-waiting/count/${usersData?._id}` });
     if (response) {
@@ -394,6 +456,28 @@ const CoachDetailTemplate = ({ slug }) => {
                     onClick={handleReject}
                     className={classes?.rejectButton}
                   />
+                  <button 
+                    className={classes.downloadButton} 
+                    onClick={handleDownloadTransactions}
+                    disabled={downloadLoading}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    {downloadLoading ? "Downloading..." : "Download Transactions"}
+                  </button>
                 </div>
               )
             ) : SelectedTabs.value === "feeds" ? (

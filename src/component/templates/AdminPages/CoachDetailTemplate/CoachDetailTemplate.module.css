@@ -44,3 +44,37 @@
 .rejectButton{
     min-width: 100px;
 }
+
+.downloadButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    height: 42px;
+    background-color: #B0CD6E;
+    color: #344313;
+    border: 1px solid var(--White);
+    border-radius: 6px;
+    font-family: "AvenirRegular";
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.5s all;
+    outline: none;
+    white-space: nowrap;
+    min-width: fit-content;
+    margin-left: 20px;
+}
+
+.downloadButton:hover {
+    opacity: 0.9;
+}
+
+.downloadButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.downloadButton svg {
+    flex-shrink: 0;
+}

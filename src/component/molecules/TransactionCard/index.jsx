@@ -4,12 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import classes from "./TransactionCard.module.css";
-import { capitalizeFirstLetter, getMonthName, mediaUrl } from "@/resources/utils/helper";
+import { capitalizeFirstLetter, getMonthName, mediaUrl, mergeClass } from "@/resources/utils/helper";
 import useAxios from "@/interceptor/axiosInterceptor";
 import RenderToast from "@/component/atoms/RenderToast";
 import Button from "@/component/atoms/Button";
 
 const TransactionCard = ({ item, transactionType, getData }) => {
+  console.log("🚀 ~ TransactionCard ~ item:", item)
   
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -79,14 +80,14 @@ const TransactionCard = ({ item, transactionType, getData }) => {
             <div className={classes.transactionDetails}>
               <div className={classes.detailRow}>
                 <span className={classes.detailLabel}>Coach Name</span>
-                <span className={classes.detailValue}>
+                <span className={mergeClass(classes.detailValue, classes.capitalize)}>
                   {item?.coach?.fullName || "-"}
                 </span>
               </div>
               <div className={classes.detailRow}>
                 <span className={classes.detailLabel}>Month</span>
                 <span className={classes.detailValue}>
-                  {`${getMonthName(item?.month) || "-"}`}
+                  {`${getMonthName(item?.createdAt) || "-"}`}
                 </span>
               </div>
               <div className={classes.detailRow}>
@@ -96,11 +97,23 @@ const TransactionCard = ({ item, transactionType, getData }) => {
                 </span>
               </div>             
               <div className={classes.detailRow}>
-                <span className={classes.detailLabel}>Total</span>
+                <span className={classes.detailLabel}>{transactionType?.value === "withdrawal" ? 'Total' : 'Sub Total'}</span>
                 <span className={classes.detailValue}>
                 £{ transactionType?.value === "withdrawal" ? item?.amount : item?.totalAmount ?? "0"}
                 </span>
               </div>
+             {transactionType?.value !== "withdrawal" && <div className={classes.detailRow}>
+                <span className={classes.detailLabel}>Tax Amount</span>
+                <span className={classes.detailValue}>
+                £{ item?.taxAmount ?  item?.taxAmount : "0"}
+                </span>
+              </div>}
+               {transactionType?.value !== "withdrawal" && <div className={classes.detailRow}>
+                <span className={classes.detailLabel}>Total Amount</span>
+                <span className={classes.detailValue}>
+                £{ (item?.taxAmount && item?.totalAmount) ?  (item?.totalAmount + item?.taxAmount) : item?.totalAmount ? item?.totalAmount : "0"}
+                </span>
+              </div>}
             </div>
             {transactionType?.value === "withdrawal" && withdrawalStatus === "pending" && (
               <div className={classes.buttonContainer}>

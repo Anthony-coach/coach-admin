@@ -12,10 +12,16 @@ import NoData from "@/component/atoms/NoData/NoData";
 import DropDown from "@/component/molecules/DropDown/DropDown";
 import { RECORDS_LIMIT } from "@/const";
 import PaginationComponent from "@/component/molecules/PaginationComponent";
+import RenderToast from "@/component/atoms/RenderToast";
+import axios from "axios";
+import { BaseURL } from "@/resources/utils/helper";
+import { useSelector } from "react-redux";
+import momentTimezone from "moment-timezone";
 
 const TransansactionTemplate = () => {
 
   const { Get} = useAxios();
+  const { accessToken } = useSelector((state) => state.authReducer);
   
   const [transactionData, setTransactionData] = useState([]);
   const [loading, setLoading] = useState("");
@@ -64,6 +70,68 @@ const TransansactionTemplate = () => {
   useEffect(() => {
     getTransactionData({ _search: debounceSearch, status: status, _transactionType: transactionType, _page:1 });
   }, [debounceSearch, status, transactionType]);
+
+  const handleDownloadCSV = async () => {
+    if (transactionData.length === 0) {
+      RenderToast({
+        message: "No transactions found",
+        type: "error",
+      });
+      return;
+    }
+    setLoading("downloading");
+    try {
+      const query = {
+        transactionType: transactionType?.value,
+      };
+      const queryString = new URLSearchParams(query).toString();
+      const url = BaseURL(`admin/transactions/download/csv?${queryString}`);
+      const response = await axios.get(url, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          timezone: momentTimezone.tz.guess(),
+        },
+      });
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `transactions-${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      // Check if this is the specific "No transactions found" error
+      const errorMessage = err?.response?.data?.message?.error;
+      if (Array.isArray(errorMessage) && errorMessage.length > 0) {
+        const firstError = errorMessage[0];
+        if (firstError && firstError.includes("No transactions found")) {
+          RenderToast({
+            message: "No transactions found",
+            type: "error",
+          });
+        } else {
+          // For other errors, show the original error message
+          RenderToast({
+            message: firstError || "An error occurred while downloading",
+            type: "error",
+          });
+        }
+      } else {
+        // Fallback for other error types
+        RenderToast({
+          message: "An error occurred while downloading",
+          type: "error",
+        });
+      }
+      console.log("error in downloading");
+    }
+    setLoading("");
+  };
     
   return (
     <div>
@@ -105,6 +173,28 @@ const TransansactionTemplate = () => {
           </div> 
           )
          }
+         <button 
+           className={classes.downloadButton} 
+           onClick={handleDownloadCSV}
+           disabled={loading === "downloading" || loading === "loading"}
+         >
+           <svg
+             xmlns="http://www.w3.org/2000/svg"
+             width="16"
+             height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             strokeWidth="3"
+             strokeLinecap="round"
+             strokeLinejoin="round"
+           >
+             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+             <polyline points="7 10 12 15 17 10"></polyline>
+             <line x1="12" y1="15" x2="12" y2="3"></line>
+           </svg>
+           Download CSV
+         </button>
          </FilterHeader>
          
       </TopHeader>

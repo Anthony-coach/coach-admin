@@ -611,13 +611,34 @@ export const formatDate = (date) => {
   return new Date(date).toLocaleDateString("en-US", options);
 };
 
-export const getMonthName = (monthIndex) => {
-  if (monthIndex < 0 || monthIndex > 11) return "Invalid month";
+export const getMonthName = (input) => {
+  // Accepts a month index (0-11), a Date instance, or a date string/ISO timestamp
+  if (input === null || input === undefined) return "";
+
+  let monthIndex;
+
+  if (typeof input === "number") {
+    monthIndex = input;
+  } else {
+    const date = new Date(input);
+    if (isNaN(date.getTime())) return "";
+    monthIndex = date.getMonth();
+  }
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
-  
-  return months[monthIndex] || "Invalid month";
+
+  return months[monthIndex] || "";
 };
