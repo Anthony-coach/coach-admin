@@ -10,6 +10,7 @@ import RenderToast from "@/component/atoms/RenderToast";
 import Button from "@/component/atoms/Button";
 
 const TransactionCard = ({ item, transactionType, getData }) => {
+  console.log("🚀 ~ TransactionCard ~ item:", item)
   
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -86,7 +87,7 @@ const TransactionCard = ({ item, transactionType, getData }) => {
               <div className={classes.detailRow}>
                 <span className={classes.detailLabel}>Month</span>
                 <span className={classes.detailValue}>
-                  {`${getMonthName(item?.month) || "-"}`}
+                  {`${getMonthName(item?.createdAt) || "-"}`}
                 </span>
               </div>
               <div className={classes.detailRow}>
